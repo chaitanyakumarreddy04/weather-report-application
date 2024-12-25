@@ -1,0 +1,182 @@
+import java.util.*;
+import java.text.DecimalFormat;
+
+class WeatherData {
+    private String city;
+    private double temperature; // in Celsius
+    private double humidity; // in percentage
+    private double windSpeed; // in km/h
+    private double pressure; // in hPa
+    private String description;
+
+    public WeatherData(String city, double temperature, double humidity, double windSpeed, double pressure, String description) {
+        this.city = city;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.windSpeed = windSpeed;
+        this.pressure = pressure;
+        this.description = description;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getHumidity() {
+        return humidity;
+    }
+
+    public double getWindSpeed() {
+        return windSpeed;
+    }
+
+    public double getPressure() {
+        return pressure;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void displayWeatherDetails() {
+        DecimalFormat df = new DecimalFormat("#.##");
+        System.out.println("City: " + city);
+        System.out.println("Temperature: " + df.format(temperature) + "°C");
+        System.out.println("Humidity: " + df.format(humidity) + "%");
+        System.out.println("Wind Speed: " + df.format(windSpeed) + " km/h");
+        System.out.println("Pressure: " + df.format(pressure) + " hPa");
+        System.out.println("Condition: " + description);
+    }
+}
+
+class WeatherReport {
+    private Map<String, WeatherData> weatherDataMap;
+
+    public WeatherReport() {
+        weatherDataMap = new HashMap<>();
+        loadSampleWeatherData();
+    }
+
+    private void loadSampleWeatherData() {
+        // Sample data for cities
+        weatherDataMap.put("New York", new WeatherData("New York", 22.5, 60.0, 15.0, 1013.0, "Clear Sky"));
+        weatherDataMap.put("London", new WeatherData("London", 18.0, 75.0, 10.0, 1010.0, "Partly Cloudy"));
+        weatherDataMap.put("Paris", new WeatherData("Paris", 20.0, 65.0, 12.0, 1015.0, "Light Rain"));
+        weatherDataMap.put("Tokyo", new WeatherData("Tokyo", 25.0, 55.0, 20.0, 1012.0, "Sunny"));
+        weatherDataMap.put("Mumbai", new WeatherData("Mumbai", 30.0, 80.0, 10.0, 1010.0, "Humid"));
+        weatherDataMap.put("Sydney", new WeatherData("Sydney", 23.0, 70.0, 18.0, 1014.0, "Windy"));
+    }
+
+    public WeatherData getWeatherData(String city) {
+        return weatherDataMap.get(city);
+    }
+
+    public void displayAllCitiesWeather() {
+        for (WeatherData data : weatherDataMap.values()) {
+            data.displayWeatherDetails();
+            System.out.println("-----------------------------------");
+        }
+    }
+
+    public void displayWeatherByCity(String city) {
+        WeatherData data = getWeatherData(city);
+        if (data != null) {
+            data.displayWeatherDetails();
+        } else {
+            System.out.println("Weather data for " + city + " is not available.");
+        }
+    }
+}
+
+class WeatherAlert {
+    public void generateAlert(WeatherData data) {
+        double temperature = data.getTemperature();
+        double windSpeed = data.getWindSpeed();
+        double humidity = data.getHumidity();
+
+        if (temperature > 30) {
+            System.out.println("Alert: High temperature detected in " + data.getCity() + " (" + temperature + "°C). Stay cool and hydrated!");
+        }
+        if (windSpeed > 50) {
+            System.out.println("Alert: High wind speed detected in " + data.getCity() + " (" + windSpeed + " km/h). Be cautious of strong winds!");
+        }
+        if (humidity > 80) {
+            System.out.println("Alert: High humidity detected in " + data.getCity() + " (" + humidity + "%). Risk of heatstroke!");
+        }
+    }
+}
+
+class WeatherApplication {
+    private static Scanner scanner = new Scanner(System.in);
+    private static WeatherReport weatherReport = new WeatherReport();
+    private static WeatherAlert weatherAlert = new WeatherAlert();
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to the Weather Report System!");
+        while (true) {
+            displayMenu();
+            int choice = getChoice();
+            switch (choice) {
+                case 1:
+                    viewAllCitiesWeather();
+                    break;
+                case 2:
+                    viewWeatherForCity();
+                    break;
+                case 3:
+                    generateWeatherAlerts();
+                    break;
+                case 4:
+                    exitApplication();
+                    break;
+                default:
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+
+    private static void displayMenu() {
+        System.out.println("\n-------- Weather Report Menu --------");
+        System.out.println("1. View Weather for All Cities");
+        System.out.println("2. View Weather for a Specific City");
+        System.out.println("3. Generate Weather Alerts");
+        System.out.println("4. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static int getChoice() {
+        return scanner.nextInt();
+    }
+
+    private static void viewAllCitiesWeather() {
+        weatherReport.displayAllCitiesWeather();
+    }
+
+    private static void viewWeatherForCity() {
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter the city name: ");
+        String city = scanner.nextLine();
+        weatherReport.displayWeatherByCity(city);
+    }
+
+    private static void generateWeatherAlerts() {
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter the city name for alert: ");
+        String city = scanner.nextLine();
+        WeatherData data = weatherReport.getWeatherData(city);
+        if (data != null) {
+            weatherAlert.generateAlert(data);
+        } else {
+            System.out.println("Weather data for " + city + " is not available to generate alert.");
+        }
+    }
+
+    private static void exitApplication() {
+        System.out.println("Thank you for using the Weather Report System. Goodbye!");
+        System.exit(0);
+    }
+}
